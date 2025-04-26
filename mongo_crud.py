@@ -18,6 +18,9 @@ client = MongoClient(MONGO_URI)
 db = client['lung_cancer']
 collection = db['lung_cancer']
 
+# Cleanup for testing
+collection.delete_many({}) 
+
 # --------------------
 # C - CREATE Operation
 # --------------------
@@ -41,19 +44,19 @@ for doc in collection.find({ "LUNG_CANCER": "YES" }, { "_id": 0, "GENDER": 1, "A
 # --------------------
 # U - UPDATE Operation
 # --------------------
-print("\nUpdating F 60 with ANXIETY to 0 and PEER_PRESSURE TO 1:")
+print("\nUpdating F 60 with ANXIETY to 0 and PEER_PRESSURE TO 1")
 update_result = collection.update_one(
     { "AGE": 60, "GENDER": "F" },
     { "$set": { "ANXIETY": 0, "PEER_PRESSURE": 1 } }
 )
-print(f"\nUpdated {update_result.modified_count} document(s)")
+print(f"Updated {update_result.modified_count} document(s)")
 for doc in collection.find({ "LUNG_CANCER": "YES" }, { "_id": 0, "GENDER": 1, "AGE": 1, "ANXIETY": 1, "PEER_PRESSURE": 1 }):
     print(doc)
 
 # --------------------
 # D - DELETE Operation
 # --------------------
-print("\n Delete the record of Age 60 and Gender F")
+print("\nDelete the record of Age 60 and Gender F")
 delete_result = collection.delete_one({ "AGE": 60, "GENDER": "F" })
 print(f"Deleted {delete_result.deleted_count} document(s), remaining records in collection:")
 for document in collection.find():  # Finds all documents in the collection
