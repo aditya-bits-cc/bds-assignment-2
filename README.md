@@ -45,21 +45,31 @@ db.lung_cancer_db.aggregate([
 ])
 ```
 
-4. **Distribution of Lung Cancer by Gender**
-```js
-db.lung_cancer_db.aggregate([
-  { $match: { LUNG_CANCER: "YES" } },
-  { $group: { _id: "$GENDER", count: { $sum: 1 } } },
-  { $project: { gender: "$_id", count: 1, _id: 0 } }
-])
-```
-
-5. **Average Age of Diagnosed Patients**
+4. **Average Age of Diagnosed Patients**
 ```js
 db.lung_cancer_db.aggregate([
   { $match: { LUNG_CANCER: "YES" } },
   { $group: { _id: null, average_age: { $avg: "$AGE" } } },
   { $project: { _id: 0, description: "Average Age of Diagnosed Patients", average_age: 1 } }
+])
+```
+
+5. **Number of people who smoke and have lung cancer with age and gender based distribution**
+```js
+db.lung_cancer_db.aggregate([
+  {$match: { SMOKING: 1, LUNG_CANCER: "YES"}},
+  {$facet: 
+    { 
+      "age_40_or_less_M": [{$match: {AGE: {$lte: 40}, GENDER: "M"}}, 
+                             {$count: "count" }],
+      "age_40_or_less_F": [{$match: {AGE: {$lte: 40}, GENDER: "F"}}, 
+                             {$count: "count" }],
+      "age_41_or_greater_M": [{ $match: {AGE: {$gt: 40}, GENDER: "M"}}, 
+                              {$count: "count"}],
+      "age_41_or_greater_F": [{ $match: {AGE: {$gte: 40}, GENDER: "F"}}, 
+                              {$count: "count"}],
+    }
+  }
 ])
 ```
 
